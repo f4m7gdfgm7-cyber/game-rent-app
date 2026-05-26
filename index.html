@@ -55,11 +55,13 @@ body{
   width:100%;
   height:100%;
   display:none;
-  z-index:998;
   background:var(--overlay);
+  z-index:998;
 }
 
-.overlay.active{display:block;}
+.overlay.active{
+  display:block;
+}
 
 .menu{
   position:fixed;
@@ -69,13 +71,22 @@ body{
   height:100%;
   background:var(--bg);
   padding:15px;
-  transition:0.25s cubic-bezier(.2,.8,.2,1);
+  transition:0.3s;
   z-index:999;
-  will-change:transform;
 }
 
 .menu.open{
   left:0;
+}
+
+.menuBtn{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:var(--muted);
+  color:var(--text);
 }
 
 /* GRID */
@@ -109,22 +120,16 @@ body{
   width:100%;
   height:100%;
   background:var(--bg);
-
   transform:translate3d(100%,0,0);
-  transition:transform 0.22s cubic-bezier(.2,.9,.2,1);
-  will-change:transform;
-
+  transition:transform 0.25s ease;
   z-index:1000;
   padding:15px;
   overflow:auto;
+  will-change:transform;
 }
 
 .page.open{
   transform:translate3d(0,0,0);
-}
-
-.page.dragging{
-  transition:none;
 }
 
 /* GALLERY */
@@ -132,10 +137,11 @@ body{
   width:100%;
   height:180px;
   border-radius:14px;
-  background:var(--muted);
-  display:flex;
   overflow-x:auto;
+  display:flex;
   scroll-snap-type:x mandatory;
+  background:var(--muted);
+  margin-bottom:15px;
 }
 
 .slide{
@@ -149,15 +155,15 @@ body{
 
 <body>
 
+<!-- MENU -->
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <div class="menu" id="menu">
-  <button class="iconBtn" onclick="toggleTheme()">🌙</button>
-  <button style="width:100%;margin-top:15px;padding:12px;border-radius:12px;border:none;background:var(--muted);color:var(--text);">
-    Войти / Регистрация
-  </button>
+  <button class="menuBtn" onclick="toggleTheme()">🌙 / ☀️ Тема</button>
+  <button class="menuBtn">👤 Войти / Регистрация</button>
 </div>
 
+<!-- TOP -->
 <div class="topbar">
   <button class="iconBtn" onclick="openMenu()">☰</button>
   <h3 style="margin:0;">Game Rent</h3>
@@ -204,7 +210,7 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
-/* OPEN */
+/* OPEN ACCOUNT */
 function openAcc(title, price){
 
   document.getElementById("page").classList.add("open");
@@ -218,57 +224,45 @@ function openAcc(title, price){
 
     <h2>${title}</h2>
     <p>💳 ${price}</p>
-    <button>Орендувати</button>
+    <button style="padding:12px;border-radius:12px;border:none;background:var(--muted);color:var(--text);width:100%;">
+      Орендувати
+    </button>
   `;
 }
 
-/* CLOSE */
-function closePage(){
-  document.getElementById("page").classList.remove("open");
-}
+/* SWIPE CLOSE (NO DRAG, ONLY DETECT) */
+let startX = 0;
+let startY = 0;
 
-/* SMOOTH SWIPE */
-let startX=0;
-let currentX=0;
-let dragging=false;
+const page = document.getElementById("page");
 
-const page=document.getElementById("page");
-
-page.addEventListener("touchstart",(e)=>{
-  startX=e.touches[0].clientX;
-  dragging=true;
-  page.classList.add("dragging");
+page.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
 });
 
-page.addEventListener("touchmove",(e)=>{
-  if(!dragging) return;
+page.addEventListener("touchend", (e) => {
 
-  currentX=e.touches[0].clientX;
-  let diff=currentX-startX;
+  let endX = e.changedTouches[0].clientX;
+  let endY = e.changedTouches[0].clientY;
 
-  const w=window.innerWidth;
+  let diffX = endX - startX;
+  let diffY = Math.abs(endY - startY);
 
-  if(startX < w/3 && diff>0){
-    requestAnimationFrame(()=>{
-      page.style.transform=`translate3d(${diff}px,0,0)`;
-    });
-  }
-});
+  const screenWidth = window.innerWidth;
 
-page.addEventListener("touchend",()=>{
-  dragging=false;
-  page.classList.remove("dragging");
+  const isLeftZone = startX < screenWidth / 3;
+  const isSwipeRight = diffX > 90;
+  const isVerticalOk = diffY < 80;
 
-  let diff=currentX-startX;
-
-  page.style.transform="";
-
-  const w=window.innerWidth;
-
-  if(startX < w/3 && diff>80){
+  if (isLeftZone && isSwipeRight && isVerticalOk) {
     closePage();
   }
 });
+
+function closePage(){
+  document.getElementById("page").classList.remove("open");
+}
 
 </script>
 
