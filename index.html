@@ -2,93 +2,166 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Game Rent</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family: Arial;
+      transition:0.3s;
+    }
+
+    /* верхняя панель */
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:15px;
+      border-bottom:1px solid rgba(128,128,128,0.3);
+    }
+
+    .btn{
+      padding:10px 14px;
+      border-radius:12px;
+      border:none;
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    /* круглая кнопка назад */
+    .backBtn{
+      width:45px;
+      height:45px;
+      border-radius:50%;
+      border:none;
+      cursor:pointer;
+      font-size:20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* сетка */
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      padding:15px;
+    }
+
+    /* карточка */
+    .card{
+      border-radius:16px;
+      overflow:hidden;
+      cursor:pointer;
+      padding:10px;
+      border:1px solid rgba(128,128,128,0.3);
+    }
+
+    .img{
+      width:100%;
+      height:90px;
+      border-radius:12px;
+      background:#999;
+      margin-bottom:10px;
+    }
+
+    .accPage{
+      padding:15px;
+    }
+  </style>
 </head>
 
-<body id="body" style="font-family:Arial; margin:0; transition:0.3s;">
+<body id="body">
 
-<!-- Верхняя панель -->
-<div style="padding:15px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid gray;">
-  <h2 style="margin:0;">🎮 Game Rent</h2>
+<!-- TOP -->
+<div class="topbar">
+  <h2 style="margin:0;">🎮 Rent</h2>
 
-  <button onclick="toggleTheme()" style="padding:8px 12px;">
-    🌙 / ☀️
-  </button>
+  <button class="btn" onclick="toggleTheme()">🌙 / ☀️</button>
 </div>
 
-<!-- Каталог -->
-<div style="padding:15px;" id="catalog">
+<!-- CATALOG -->
+<div id="catalog" class="grid">
 
-  <div onclick="openAcc('acc1')" style="border:1px solid gray; padding:10px; margin-bottom:10px; border-radius:10px; cursor:pointer;">
-    <h3>#001</h3>
-    <p>🎯 PUBG Mobile</p>
-    <p>💳 3$ / час</p>
-    <p>🟢 Вільний</p>
+  <div class="card" onclick="openAcc('acc1')">
+    <div class="img"></div>
+    <b>#001</b>
+    <p>PUBG Mobile</p>
+    <p>3$ / час</p>
+    <p>🟢 Free</p>
   </div>
 
-  <div onclick="openAcc('acc2')" style="border:1px solid gray; padding:10px; border-radius:10px; cursor:pointer;">
-    <h3>#002</h3>
-    <p>🎯 PUBG Mobile</p>
-    <p>💳 5$ / час</p>
-    <p>🔴 Зайнятий</p>
+  <div class="card" onclick="openAcc('acc2')">
+    <div class="img"></div>
+    <b>#002</b>
+    <p>PUBG Mobile</p>
+    <p>5$ / час</p>
+    <p>🔴 Busy</p>
   </div>
 
 </div>
 
-<!-- Страница аккаунта -->
-<div id="accPage" style="display:none; padding:15px;">
-  <button onclick="back()" style="margin-bottom:10px;">⬅ Назад</button>
+<!-- PAGE -->
+<div id="page" class="accPage" style="display:none;">
 
-  <div id="accContent"></div>
+  <button id="backBtn" class="backBtn" onclick="back()">←</button>
+
+  <div id="content" style="margin-top:15px;"></div>
 </div>
 
 <script>
 let dark = false;
 
-function toggleTheme() {
+function toggleTheme(){
   dark = !dark;
 
-  if (dark) {
+  if(dark){
     document.getElementById("body").style.background = "#000";
     document.getElementById("body").style.color = "#fff";
+    document.getElementById("backBtn").style.background = "#222";
+    document.querySelector(".btn").style.background = "#222";
+    document.querySelector(".btn").style.color = "#fff";
   } else {
     document.getElementById("body").style.background = "#fff";
     document.getElementById("body").style.color = "#000";
+    document.getElementById("backBtn").style.background = "#e0e0e0";
+    document.querySelector(".btn").style.background = "#e0e0e0";
+    document.querySelector(".btn").style.color = "#000";
   }
 }
 
-function openAcc(id) {
+function openAcc(id){
   document.getElementById("catalog").style.display = "none";
-  document.getElementById("accPage").style.display = "block";
+  document.getElementById("page").style.display = "block";
 
-  let data = "";
+  let html = "";
 
-  if (id === "acc1") {
-    data = `
+  if(id === "acc1"){
+    html = `
       <h2>#001</h2>
       <p>🎮 PUBG Mobile</p>
       <p>💳 3$ / час</p>
-      <p>📅 Последняя аренда: сегодня</p>
-      <button>Орендувати</button>
+      <button class="btn">Орендувати</button>
     `;
   }
 
-  if (id === "acc2") {
-    data = `
+  if(id === "acc2"){
+    html = `
       <h2>#002</h2>
       <p>🎮 PUBG Mobile</p>
       <p>💳 5$ / час</p>
-      <p>📅 Последняя аренда: вчера</p>
-      <button>Орендувати</button>
+      <button class="btn">Орендувати</button>
     `;
   }
 
-  document.getElementById("accContent").innerHTML = data;
+  document.getElementById("content").innerHTML = html;
 }
 
-function back() {
-  document.getElementById("catalog").style.display = "block";
-  document.getElementById("accPage").style.display = "none";
+function back(){
+  document.getElementById("catalog").style.display = "grid";
+  document.getElementById("page").style.display = "none";
 }
 </script>
 
