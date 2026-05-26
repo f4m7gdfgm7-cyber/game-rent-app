@@ -7,19 +7,19 @@
 
 <style>
 :root{
-  --bg:#f5f5f5;
-  --text:#000;
-  --card:#fff;
-  --muted:#e6e6e6;
-  --menu:#ffffff;
-}
-
-body.dark{
   --bg:#000;
   --text:#fff;
   --card:#1e1e1e;
   --muted:#2a2a2a;
   --menu:#111;
+}
+
+body.light{
+  --bg:#f5f5f5;
+  --text:#000;
+  --card:#fff;
+  --muted:#e6e6e6;
+  --menu:#fff;
 }
 
 body{
@@ -36,7 +36,6 @@ body{
   justify-content:space-between;
   align-items:center;
   padding:15px;
-  border-bottom:1px solid rgba(128,128,128,0.2);
 }
 
 /* ICON BUTTON */
@@ -48,10 +47,24 @@ body{
   cursor:pointer;
   background:var(--muted);
   color:var(--text);
-  font-size:20px;
+  font-size:22px;
 }
 
 /* MENU */
+.overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:none;
+  z-index:998;
+}
+
+.overlay.active{
+  display:block;
+}
+
 .menu{
   position:fixed;
   top:0;
@@ -59,26 +72,14 @@ body{
   width:260px;
   height:100%;
   background:var(--menu);
-  color:var(--text);
   padding:15px;
   transition:0.35s;
   z-index:999;
-  box-shadow:0 0 20px rgba(0,0,0,0.2);
+  box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
 
 .menu.open{
   left:0;
-}
-
-.menuBtn{
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  background:var(--muted);
-  color:var(--text);
 }
 
 /* GRID */
@@ -95,16 +96,37 @@ body{
   border-radius:18px;
   padding:10px;
   cursor:pointer;
-  border:1px solid rgba(128,128,128,0.2);
 }
 
-/* IMAGE PLACEHOLDER */
+/* THUMB */
 .thumb{
   width:100%;
   height:90px;
   border-radius:12px;
   background:var(--muted);
   margin-bottom:10px;
+}
+
+/* MENU BUTTONS */
+.menuBtn{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  background:var(--muted);
+  color:var(--text);
+}
+
+.menuTopBtn{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  background:var(--muted);
+  font-size:20px;
 }
 
 /* PAGE */
@@ -122,14 +144,15 @@ body{
 </style>
 </head>
 
-<body id="body">
+<body>
+
+<!-- CLICK OUTSIDE OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <!-- MENU -->
 <div class="menu" id="menu">
 
-  <button class="menuBtn" onclick="closeMenu()">❌ Закрити</button>
-
-  <button class="menuBtn" onclick="toggleTheme()">🌙 / ☀️ Тема</button>
+  <button class="menuTopBtn" onclick="toggleTheme()">🌙</button>
 
   <button class="menuBtn">👤 Войти / Регистрация</button>
 
@@ -138,7 +161,7 @@ body{
 <!-- TOP -->
 <div class="topbar">
 
-  <button class="iconBtn" onclick="openMenu()">☰☰☰</button>
+  <button class="iconBtn" onclick="openMenu()">☰</button>
 
   <h3 style="margin:0;">Game Rent</h3>
 
@@ -167,11 +190,7 @@ body{
 
 <!-- PAGE -->
 <div id="page" class="page" style="display:none;">
-
-  <button class="iconBtn" onclick="back()">←</button>
-
   <div class="slider"></div>
-
   <div id="content"></div>
 </div>
 
@@ -179,14 +198,16 @@ body{
 
 function openMenu(){
   document.getElementById("menu").classList.add("open");
+  document.getElementById("overlay").classList.add("active");
 }
 
 function closeMenu(){
   document.getElementById("menu").classList.remove("open");
+  document.getElementById("overlay").classList.remove("active");
 }
 
 function toggleTheme(){
-  document.getElementById("body").classList.toggle("dark");
+  document.body.classList.toggle("light");
 }
 
 function openAcc(id){
@@ -214,11 +235,6 @@ function openAcc(id){
   }
 
   document.getElementById("content").innerHTML=html;
-}
-
-function back(){
-  document.getElementById("catalog").style.display="grid";
-  document.getElementById("page").style.display="none";
 }
 
 </script>
