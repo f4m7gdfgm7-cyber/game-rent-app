@@ -54,14 +54,12 @@ body{
   left:0;
   width:100%;
   height:100%;
-  background:var(--overlay);
   display:none;
   z-index:998;
+  background:var(--overlay);
 }
 
-.overlay.active{
-  display:block;
-}
+.overlay.active{display:block;}
 
 .menu{
   position:fixed;
@@ -71,22 +69,13 @@ body{
   height:100%;
   background:var(--bg);
   padding:15px;
-  transition:0.3s;
+  transition:0.25s cubic-bezier(.2,.8,.2,1);
   z-index:999;
+  will-change:transform;
 }
 
 .menu.open{
   left:0;
-}
-
-.menuBtn{
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  background:var(--muted);
-  color:var(--text);
 }
 
 /* GRID */
@@ -97,7 +86,6 @@ body{
   padding:15px;
 }
 
-/* CARD */
 .card{
   background:var(--card);
   border-radius:18px;
@@ -121,34 +109,55 @@ body{
   width:100%;
   height:100%;
   background:var(--bg);
-  transform:translateX(100%);
-  transition:0.25s cubic-bezier(.2,.8,.2,1);
+
+  transform:translate3d(100%,0,0);
+  transition:transform 0.22s cubic-bezier(.2,.9,.2,1);
+  will-change:transform;
+
   z-index:1000;
   padding:15px;
   overflow:auto;
 }
 
 .page.open{
-  transform:translateX(0);
+  transform:translate3d(0,0,0);
 }
 
 .page.dragging{
   transition:none;
+}
+
+/* GALLERY */
+.gallery{
+  width:100%;
+  height:180px;
+  border-radius:14px;
+  background:var(--muted);
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+}
+
+.slide{
+  min-width:100%;
+  height:100%;
+  scroll-snap-align:center;
+  background:var(--muted);
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <div class="menu" id="menu">
-  <button class="menuBtn" onclick="toggleTheme()">🌙 / ☀️ Тема</button>
-  <button class="menuBtn">👤 Войти / Регистрация</button>
+  <button class="iconBtn" onclick="toggleTheme()">🌙</button>
+  <button style="width:100%;margin-top:15px;padding:12px;border-radius:12px;border:none;background:var(--muted);color:var(--text);">
+    Войти / Регистрация
+  </button>
 </div>
 
-<!-- TOP -->
 <div class="topbar">
   <button class="iconBtn" onclick="openMenu()">☰</button>
   <h3 style="margin:0;">Game Rent</h3>
@@ -195,70 +204,68 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
-/* OPEN ACCOUNT */
+/* OPEN */
 function openAcc(title, price){
 
   document.getElementById("page").classList.add("open");
 
   document.getElementById("content").innerHTML = `
+    <div class="gallery">
+      <div class="slide"></div>
+      <div class="slide"></div>
+      <div class="slide"></div>
+    </div>
+
     <h2>${title}</h2>
     <p>💳 ${price}</p>
     <button>Орендувати</button>
   `;
-
-  if(navigator.vibrate){
-    navigator.vibrate(30);
-  }
 }
 
 /* CLOSE */
 function closePage(){
   document.getElementById("page").classList.remove("open");
-
-  if(navigator.vibrate){
-    navigator.vibrate(20);
-  }
 }
 
-/* ===== IMPROVED SWIPE (drag feeling) ===== */
+/* SMOOTH SWIPE */
+let startX=0;
+let currentX=0;
+let dragging=false;
 
-let startX = 0;
-let currentX = 0;
-let dragging = false;
-
-const page = document.getElementById("page");
+const page=document.getElementById("page");
 
 page.addEventListener("touchstart",(e)=>{
-  startX = e.touches[0].clientX;
-  dragging = true;
+  startX=e.touches[0].clientX;
+  dragging=true;
   page.classList.add("dragging");
 });
 
 page.addEventListener("touchmove",(e)=>{
   if(!dragging) return;
 
-  currentX = e.touches[0].clientX;
-  let diff = currentX - startX;
+  currentX=e.touches[0].clientX;
+  let diff=currentX-startX;
 
-  const screenWidth = window.innerWidth;
+  const w=window.innerWidth;
 
-  // только левая зона
-  if(startX < screenWidth / 3 && diff > 0){
-    page.style.transform = `translateX(${diff}px)`;
+  if(startX < w/3 && diff>0){
+    requestAnimationFrame(()=>{
+      page.style.transform=`translate3d(${diff}px,0,0)`;
+    });
   }
 });
 
 page.addEventListener("touchend",()=>{
-  dragging = false;
+  dragging=false;
   page.classList.remove("dragging");
 
-  let diff = currentX - startX;
+  let diff=currentX-startX;
 
-  page.style.transform = "";
+  page.style.transform="";
 
-  const screenWidth = window.innerWidth;
+  const w=window.innerWidth;
 
-  if(startX < screenWidth / 3 && diff > 80){
+  if(startX < w/3 && diff>80){
     closePage();
   }
 });
