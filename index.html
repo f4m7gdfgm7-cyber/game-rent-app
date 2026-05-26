@@ -11,7 +11,6 @@
   --text:#fff;
   --card:#1e1e1e;
   --muted:#2a2a2a;
-  --overlay:rgba(0,0,0,0.6);
 }
 
 body.light{
@@ -19,7 +18,6 @@ body.light{
   --text:#000;
   --card:#fff;
   --muted:#e6e6e6;
-  --overlay:rgba(0,0,0,0.2);
 }
 
 body{
@@ -55,13 +53,11 @@ body{
   width:100%;
   height:100%;
   display:none;
-  background:var(--overlay);
+  background:rgba(0,0,0,0.5);
   z-index:998;
 }
 
-.overlay.active{
-  display:block;
-}
+.overlay.active{display:block;}
 
 .menu{
   position:fixed;
@@ -75,9 +71,7 @@ body{
   z-index:999;
 }
 
-.menu.open{
-  left:0;
-}
+.menu.open{left:0;}
 
 .menuBtn{
   width:100%;
@@ -125,45 +119,34 @@ body{
   z-index:1000;
   padding:15px;
   overflow:auto;
-  will-change:transform;
 }
 
 .page.open{
   transform:translate3d(0,0,0);
 }
 
-/* GALLERY */
-.gallery{
-  width:100%;
-  height:180px;
-  border-radius:14px;
-  overflow-x:auto;
-  display:flex;
-  scroll-snap-type:x mandatory;
+/* BADGE */
+.badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:10px;
   background:var(--muted);
-  margin-bottom:15px;
-}
-
-.slide{
-  min-width:100%;
-  height:100%;
-  scroll-snap-align:center;
-  background:var(--muted);
+  font-size:12px;
+  margin-bottom:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <div class="menu" id="menu">
   <button class="menuBtn" onclick="toggleTheme()">🌙 / ☀️ Тема</button>
   <button class="menuBtn">👤 Войти / Регистрация</button>
+  <button class="menuBtn" onclick="window.open('https://t.me/')">💬 Поддержка</button>
 </div>
 
-<!-- TOP -->
 <div class="topbar">
   <button class="iconBtn" onclick="openMenu()">☰</button>
   <h3 style="margin:0;">Game Rent</h3>
@@ -171,23 +154,7 @@ body{
 </div>
 
 <!-- CATALOG -->
-<div id="catalog" class="grid">
-
-  <div class="card" onclick="openAcc('PUBG #001','3$ / час')">
-    <div class="thumb"></div>
-    <b>#001</b>
-    <p>PUBG Mobile</p>
-    <p>3$ / час</p>
-  </div>
-
-  <div class="card" onclick="openAcc('PUBG #002','5$ / час')">
-    <div class="thumb"></div>
-    <b>#002</b>
-    <p>PUBG Mobile</p>
-    <p>5$ / час</p>
-  </div>
-
-</div>
+<div id="catalog" class="grid"></div>
 
 <!-- PAGE -->
 <div id="page" class="page">
@@ -196,6 +163,7 @@ body{
 
 <script>
 
+/* MENU */
 function openMenu(){
   document.getElementById("menu").classList.add("open");
   document.getElementById("overlay").classList.add("active");
@@ -210,52 +178,91 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
-/* OPEN ACCOUNT */
-function openAcc(title, price){
+/* DATABASE */
+const accounts = [
+  {
+    id:1,
+    title:"PUBG #001",
+    price:"3$ / час",
+    status:"свободен"
+  },
+  {
+    id:2,
+    title:"PUBG #002",
+    price:"5$ / час",
+    status:"занят"
+  },
+  {
+    id:3,
+    title:"PUBG #003",
+    price:"4$ / час",
+    status:"свободен"
+  }
+];
+
+/* LOAD CARDS */
+function load(){
+  const c = document.getElementById("catalog");
+  c.innerHTML = "";
+
+  accounts.forEach(a=>{
+    c.innerHTML += `
+      <div class="card" onclick="openAcc(${a.id})">
+        <div class="thumb"></div>
+        <b>${a.title}</b>
+        <p>${a.price}</p>
+        <span class="badge">${a.status}</span>
+      </div>
+    `;
+  });
+}
+
+load();
+
+/* OPEN */
+function openAcc(id){
+
+  const a = accounts.find(x=>x.id===id);
 
   document.getElementById("page").classList.add("open");
 
   document.getElementById("content").innerHTML = `
-    <div class="gallery">
-      <div class="slide"></div>
-      <div class="slide"></div>
-      <div class="slide"></div>
+    <h2>${a.title}</h2>
+    <p>💳 ${a.price}</p>
+    <p>📦 статус: ${a.status}</p>
+
+    <div style="margin:10px 0;">
+      <button class="menuBtn">1 час</button>
+      <button class="menuBtn">3 часа</button>
+      <button class="menuBtn">6 часов</button>
     </div>
 
-    <h2>${title}</h2>
-    <p>💳 ${price}</p>
-    <button style="padding:12px;border-radius:12px;border:none;background:var(--muted);color:var(--text);width:100%;">
-      Орендувати
-    </button>
+    <button class="menuBtn">Орендувати</button>
   `;
 }
 
-/* SWIPE CLOSE (NO DRAG, ONLY DETECT) */
-let startX = 0;
-let startY = 0;
+/* SWIPE CLOSE */
+let startX=0;
+let startY=0;
 
-const page = document.getElementById("page");
+const page=document.getElementById("page");
 
-page.addEventListener("touchstart", (e) => {
-  startX = e.touches[0].clientX;
-  startY = e.touches[0].clientY;
+page.addEventListener("touchstart",(e)=>{
+  startX=e.touches[0].clientX;
+  startY=e.touches[0].clientY;
 });
 
-page.addEventListener("touchend", (e) => {
+page.addEventListener("touchend",(e)=>{
 
-  let endX = e.changedTouches[0].clientX;
-  let endY = e.changedTouches[0].clientY;
+  let endX=e.changedTouches[0].clientX;
+  let endY=e.changedTouches[0].clientY;
 
-  let diffX = endX - startX;
-  let diffY = Math.abs(endY - startY);
+  let dx=endX-startX;
+  let dy=Math.abs(endY-startY);
 
-  const screenWidth = window.innerWidth;
+  const w=window.innerWidth;
 
-  const isLeftZone = startX < screenWidth / 3;
-  const isSwipeRight = diffX > 90;
-  const isVerticalOk = diffY < 80;
-
-  if (isLeftZone && isSwipeRight && isVerticalOk) {
+  if(startX < w/3 && dx>90 && dy<80){
     closePage();
   }
 });
