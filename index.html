@@ -4,49 +4,93 @@
   <meta charset="UTF-8">
   <title>Game Rent</title>
 </head>
-<body style="font-family: Arial; padding:20px;">
 
-<h2>🎮 Каталог аккаунтів</h2>
+<body id="body" style="font-family:Arial; margin:0; transition:0.3s;">
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+<!-- Верхняя панель -->
+<div style="padding:15px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid gray;">
+  <h2 style="margin:0;">🎮 Game Rent</h2>
 
-  <a href="#acc1" style="text-decoration:none; color:black;">
-    <div style="border:1px solid #ccc; padding:10px; border-radius:10px;">
-      <h3>#001</h3>
-      <p>🎯 PUBG Mobile</p>
-      <p>💳 3$ / час</p>
-      <p>🟢 Вільний</p>
-    </div>
-  </a>
+  <button onclick="toggleTheme()" style="padding:8px 12px;">
+    🌙 / ☀️
+  </button>
+</div>
 
-  <a href="#acc2" style="text-decoration:none; color:black;">
-    <div style="border:1px solid #ccc; padding:10px; border-radius:10px;">
-      <h3>#002</h3>
-      <p>🎯 PUBG Mobile</p>
-      <p>💳 5$ / час</p>
-      <p>🔴 Зайнятий</p>
-    </div>
-  </a>
+<!-- Каталог -->
+<div style="padding:15px;" id="catalog">
+
+  <div onclick="openAcc('acc1')" style="border:1px solid gray; padding:10px; margin-bottom:10px; border-radius:10px; cursor:pointer;">
+    <h3>#001</h3>
+    <p>🎯 PUBG Mobile</p>
+    <p>💳 3$ / час</p>
+    <p>🟢 Вільний</p>
+  </div>
+
+  <div onclick="openAcc('acc2')" style="border:1px solid gray; padding:10px; border-radius:10px; cursor:pointer;">
+    <h3>#002</h3>
+    <p>🎯 PUBG Mobile</p>
+    <p>💳 5$ / час</p>
+    <p>🔴 Зайнятий</p>
+  </div>
 
 </div>
 
-<hr>
+<!-- Страница аккаунта -->
+<div id="accPage" style="display:none; padding:15px;">
+  <button onclick="back()" style="margin-bottom:10px;">⬅ Назад</button>
 
-<h2 id="acc1">📦 Аккаунт #001</h2>
-<p>🎮 PUBG Mobile</p>
-<p>💳 3$ / час</p>
-<p>📅 Остання оренда: сьогодні</p>
-<p>⭐ Рейтинг: 4.8</p>
-<button>Орендувати</button>
+  <div id="accContent"></div>
+</div>
 
-<hr>
+<script>
+let dark = false;
 
-<h2 id="acc2">📦 Аккаунт #002</h2>
-<p>🎮 PUBG Mobile</p>
-<p>💳 5$ / час</p>
-<p>📅 Остання оренда: вчора</p>
-<p>⭐ Рейтинг: 4.6</p>
-<button>Орендувати</button>
+function toggleTheme() {
+  dark = !dark;
+
+  if (dark) {
+    document.getElementById("body").style.background = "#000";
+    document.getElementById("body").style.color = "#fff";
+  } else {
+    document.getElementById("body").style.background = "#fff";
+    document.getElementById("body").style.color = "#000";
+  }
+}
+
+function openAcc(id) {
+  document.getElementById("catalog").style.display = "none";
+  document.getElementById("accPage").style.display = "block";
+
+  let data = "";
+
+  if (id === "acc1") {
+    data = `
+      <h2>#001</h2>
+      <p>🎮 PUBG Mobile</p>
+      <p>💳 3$ / час</p>
+      <p>📅 Последняя аренда: сегодня</p>
+      <button>Орендувати</button>
+    `;
+  }
+
+  if (id === "acc2") {
+    data = `
+      <h2>#002</h2>
+      <p>🎮 PUBG Mobile</p>
+      <p>💳 5$ / час</p>
+      <p>📅 Последняя аренда: вчера</p>
+      <button>Орендувати</button>
+    `;
+  }
+
+  document.getElementById("accContent").innerHTML = data;
+}
+
+function back() {
+  document.getElementById("catalog").style.display = "block";
+  document.getElementById("accPage").style.display = "none";
+}
+</script>
 
 </body>
 </html>
