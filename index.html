@@ -6,13 +6,31 @@
 <title>Game Rent</title>
 
 <style>
+:root{
+  --bg:#f5f5f5;
+  --text:#000;
+  --card:#fff;
+  --muted:#e6e6e6;
+  --menu:#ffffff;
+}
+
+body.dark{
+  --bg:#000;
+  --text:#fff;
+  --card:#1e1e1e;
+  --muted:#2a2a2a;
+  --menu:#111;
+}
+
 body{
   margin:0;
   font-family:Arial;
+  background:var(--bg);
+  color:var(--text);
   transition:0.3s;
 }
 
-/* TOP BAR */
+/* TOP */
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -21,40 +39,46 @@ body{
   border-bottom:1px solid rgba(128,128,128,0.2);
 }
 
+/* ICON BUTTON */
 .iconBtn{
   width:45px;
   height:45px;
   border-radius:50%;
   border:none;
   cursor:pointer;
-  font-size:18px;
+  background:var(--muted);
+  color:var(--text);
+  font-size:20px;
 }
 
 /* MENU */
 .menu{
   position:fixed;
   top:0;
-  left:-260px;
-  width:240px;
+  left:-110%;
+  width:260px;
   height:100%;
-  background:rgba(20,20,20,0.95);
-  color:white;
+  background:var(--menu);
+  color:var(--text);
   padding:15px;
-  transition:0.3s;
+  transition:0.35s;
   z-index:999;
+  box-shadow:0 0 20px rgba(0,0,0,0.2);
 }
 
 .menu.open{
   left:0;
 }
 
-.menu button{
+.menuBtn{
   width:100%;
   margin-top:10px;
-  padding:10px;
-  border-radius:10px;
+  padding:12px;
+  border-radius:12px;
   border:none;
   cursor:pointer;
+  background:var(--muted);
+  color:var(--text);
 }
 
 /* GRID */
@@ -67,24 +91,19 @@ body{
 
 /* CARD */
 .card{
-  border-radius:16px;
+  background:var(--card);
+  border-radius:18px;
   padding:10px;
   cursor:pointer;
+  border:1px solid rgba(128,128,128,0.2);
 }
 
-/* 70% оттенок кнопки */
-.card.light{
-  background:#d9d9d9;
-}
-.card.dark{
-  background:#1e1e1e;
-}
-
+/* IMAGE PLACEHOLDER */
 .thumb{
   width:100%;
   height:90px;
   border-radius:12px;
-  background:#999;
+  background:var(--muted);
   margin-bottom:10px;
 }
 
@@ -96,8 +115,8 @@ body{
 .slider{
   width:100%;
   height:180px;
-  border-radius:12px;
-  background:#888;
+  border-radius:14px;
+  background:var(--muted);
   margin-bottom:15px;
 }
 </style>
@@ -107,29 +126,37 @@ body{
 
 <!-- MENU -->
 <div class="menu" id="menu">
-  <button onclick="toggleMenu()">❌ Закрити</button>
-  <button onclick="toggleTheme()">🌙 / ☀️ Тема</button>
-  <button>👤 Профіль</button>
+
+  <button class="menuBtn" onclick="closeMenu()">❌ Закрити</button>
+
+  <button class="menuBtn" onclick="toggleTheme()">🌙 / ☀️ Тема</button>
+
+  <button class="menuBtn">👤 Войти / Регистрация</button>
+
 </div>
 
 <!-- TOP -->
 <div class="topbar">
-  <button class="iconBtn" onclick="toggleMenu()">☰</button>
+
+  <button class="iconBtn" onclick="openMenu()">☰☰☰</button>
+
   <h3 style="margin:0;">Game Rent</h3>
-  <button class="iconBtn" onclick="toggleTheme()">🌙</button>
+
+  <div style="width:45px;"></div>
+
 </div>
 
 <!-- CATALOG -->
 <div id="catalog" class="grid">
 
-  <div class="card dark" onclick="openAcc('acc1')">
+  <div class="card" onclick="openAcc('acc1')">
     <div class="thumb"></div>
     <b>#001</b>
     <p>PUBG Mobile</p>
     <p>3$ / час</p>
   </div>
 
-  <div class="card dark" onclick="openAcc('acc2')">
+  <div class="card" onclick="openAcc('acc2')">
     <div class="thumb"></div>
     <b>#002</b>
     <p>PUBG Mobile</p>
@@ -149,22 +176,17 @@ body{
 </div>
 
 <script>
-let dark = true;
 
-function toggleMenu(){
-  document.getElementById("menu").classList.toggle("open");
+function openMenu(){
+  document.getElementById("menu").classList.add("open");
+}
+
+function closeMenu(){
+  document.getElementById("menu").classList.remove("open");
 }
 
 function toggleTheme(){
-  dark = !dark;
-
-  if(dark){
-    document.getElementById("body").style.background="#000";
-    document.getElementById("body").style.color="#fff";
-  } else {
-    document.getElementById("body").style.background="#fff";
-    document.getElementById("body").style.color="#000";
-  }
+  document.getElementById("body").classList.toggle("dark");
 }
 
 function openAcc(id){
@@ -198,6 +220,7 @@ function back(){
   document.getElementById("catalog").style.display="grid";
   document.getElementById("page").style.display="none";
 }
+
 </script>
 
 </body>
