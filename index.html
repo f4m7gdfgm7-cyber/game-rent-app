@@ -125,6 +125,25 @@ body{
   transform:translate3d(0,0,0);
 }
 
+/* GALLERY RESTORED */
+.gallery{
+  width:100%;
+  height:220px;
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  border-radius:14px;
+  background:var(--muted);
+  margin-bottom:15px;
+}
+
+.slide{
+  min-width:100%;
+  height:100%;
+  scroll-snap-align:center;
+  background:var(--muted);
+}
+
 /* BADGE */
 .badge{
   display:inline-block;
@@ -132,7 +151,6 @@ body{
   border-radius:10px;
   background:var(--muted);
   font-size:12px;
-  margin-bottom:10px;
 }
 </style>
 </head>
@@ -144,7 +162,7 @@ body{
 <div class="menu" id="menu">
   <button class="menuBtn" onclick="toggleTheme()">🌙 / ☀️ Тема</button>
   <button class="menuBtn">👤 Войти / Регистрация</button>
-  <button class="menuBtn" onclick="window.open('https://t.me/')">💬 Поддержка</button>
+  <button class="menuBtn">💬 Поддержка</button>
 </div>
 
 <div class="topbar">
@@ -163,7 +181,6 @@ body{
 
 <script>
 
-/* MENU */
 function openMenu(){
   document.getElementById("menu").classList.add("open");
   document.getElementById("overlay").classList.add("active");
@@ -191,22 +208,16 @@ const accounts = [
     title:"PUBG #002",
     price:"5$ / час",
     status:"занят"
-  },
-  {
-    id:3,
-    title:"PUBG #003",
-    price:"4$ / час",
-    status:"свободен"
   }
 ];
 
-/* LOAD CARDS */
+/* LOAD */
 function load(){
-  const c = document.getElementById("catalog");
-  c.innerHTML = "";
+  const c=document.getElementById("catalog");
+  c.innerHTML="";
 
   accounts.forEach(a=>{
-    c.innerHTML += `
+    c.innerHTML+=`
       <div class="card" onclick="openAcc(${a.id})">
         <div class="thumb"></div>
         <b>${a.title}</b>
@@ -219,7 +230,7 @@ function load(){
 
 load();
 
-/* OPEN */
+/* OPEN ACCOUNT */
 function openAcc(id){
 
   const a = accounts.find(x=>x.id===id);
@@ -227,17 +238,25 @@ function openAcc(id){
   document.getElementById("page").classList.add("open");
 
   document.getElementById("content").innerHTML = `
+    <div class="gallery">
+      <div class="slide"></div>
+      <div class="slide"></div>
+      <div class="slide"></div>
+      <div class="slide"></div>
+      <div class="slide"></div>
+    </div>
+
     <h2>${a.title}</h2>
     <p>💳 ${a.price}</p>
-    <p>📦 статус: ${a.status}</p>
+    <p>📦 ${a.status}</p>
 
-    <div style="margin:10px 0;">
+    <div style="margin-top:10px;">
       <button class="menuBtn">1 час</button>
       <button class="menuBtn">3 часа</button>
       <button class="menuBtn">6 часов</button>
     </div>
 
-    <button class="menuBtn">Орендувати</button>
+    <button class="menuBtn" style="margin-top:10px;">Орендувати</button>
   `;
 }
 
