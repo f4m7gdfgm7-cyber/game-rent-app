@@ -38,13 +38,11 @@ body{
   padding:15px;
 }
 
-/* ICON BUTTON */
 .iconBtn{
   width:45px;
   height:45px;
   border-radius:50%;
   border:none;
-  cursor:pointer;
   background:var(--muted);
   color:var(--text);
   font-size:22px;
@@ -61,9 +59,7 @@ body{
   z-index:998;
 }
 
-.overlay.active{
-  display:block;
-}
+.overlay.active{display:block;}
 
 .menu{
   position:fixed;
@@ -75,11 +71,15 @@ body{
   padding:15px;
   transition:0.35s;
   z-index:999;
-  box-shadow:0 0 20px rgba(0,0,0,0.4);
 }
 
-.menu.open{
-  left:0;
+.menu.open{left:0;}
+
+.menuRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
 }
 
 /* GRID */
@@ -98,7 +98,6 @@ body{
   cursor:pointer;
 }
 
-/* THUMB */
 .thumb{
   width:100%;
   height:90px;
@@ -107,31 +106,21 @@ body{
   margin-bottom:10px;
 }
 
-/* MENU BUTTONS */
-.menuBtn{
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  background:var(--muted);
-  color:var(--text);
-}
-
-.menuTopBtn{
-  width:45px;
-  height:45px;
-  border-radius:50%;
-  border:none;
-  cursor:pointer;
-  background:var(--muted);
-  font-size:20px;
-}
-
 /* PAGE */
 .page{
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:100%;
+  height:100%;
+  background:var(--bg);
   padding:15px;
+  transition:0.35s;
+  overflow:auto;
+}
+
+.page.open{
+  right:0;
 }
 
 .slider{
@@ -146,27 +135,26 @@ body{
 
 <body>
 
-<!-- CLICK OUTSIDE OVERLAY -->
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
 <!-- MENU -->
 <div class="menu" id="menu">
 
-  <button class="menuTopBtn" onclick="toggleTheme()">🌙</button>
+  <div class="menuRow">
+    <button class="iconBtn" onclick="toggleTheme()">🌙</button>
+  </div>
 
-  <button class="menuBtn">👤 Войти / Регистрация</button>
+  <button style="margin-top:15px;width:100%;padding:12px;border-radius:12px;border:none;background:var(--muted);color:var(--text);">
+    Войти / Регистрация
+  </button>
 
 </div>
 
 <!-- TOP -->
 <div class="topbar">
-
   <button class="iconBtn" onclick="openMenu()">☰</button>
-
   <h3 style="margin:0;">Game Rent</h3>
-
   <div style="width:45px;"></div>
-
 </div>
 
 <!-- CATALOG -->
@@ -189,9 +177,12 @@ body{
 </div>
 
 <!-- PAGE -->
-<div id="page" class="page" style="display:none;">
+<div id="page" class="page">
+
   <div class="slider"></div>
+
   <div id="content"></div>
+
 </div>
 
 <script>
@@ -210,9 +201,9 @@ function toggleTheme(){
   document.body.classList.toggle("light");
 }
 
+/* OPEN PAGE */
 function openAcc(id){
-  document.getElementById("catalog").style.display="none";
-  document.getElementById("page").style.display="block";
+  document.getElementById("page").classList.add("open");
 
   let html="";
 
@@ -235,6 +226,25 @@ function openAcc(id){
   }
 
   document.getElementById("content").innerHTML=html;
+}
+
+/* SWIPE CLOSE */
+let startX = 0;
+
+document.getElementById("page").addEventListener("touchstart", e=>{
+  startX = e.touches[0].clientX;
+});
+
+document.getElementById("page").addEventListener("touchmove", e=>{
+  let moveX = e.touches[0].clientX;
+
+  if(moveX - startX > 80){
+    closePage();
+  }
+});
+
+function closePage(){
+  document.getElementById("page").classList.remove("open");
 }
 
 </script>
