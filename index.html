@@ -140,25 +140,6 @@ body{
   transform:translate3d(0,0,0);
 }
 
-/* GALLERY */
-.gallery{
-  width:100%;
-  height:220px;
-  display:flex;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  border-radius:14px;
-  background:var(--muted);
-  margin-bottom:15px;
-}
-
-.slide{
-  min-width:100%;
-  height:100%;
-  scroll-snap-align:center;
-  background:var(--muted);
-}
-
 /* BADGE */
 .badge{
   display:inline-block;
@@ -178,11 +159,10 @@ body{
 
   <div class="profile">
     <img id="avatar">
-    <p id="username">Guest</p>
+    <p id="username"></p>
   </div>
 
   <button class="menuBtn" onclick="toggleTheme()">🌙 / ☀️ Тема</button>
-  <button class="menuBtn">👤 Профиль</button>
   <button class="menuBtn">💬 Поддержка</button>
 </div>
 
@@ -192,17 +172,15 @@ body{
   <div style="width:45px;"></div>
 </div>
 
-<!-- CATALOG -->
 <div id="catalog" class="grid"></div>
 
-<!-- PAGE -->
 <div id="page" class="page">
   <div id="content"></div>
 </div>
 
 <script>
 
-/* ===== TELEGRAM USER ===== */
+/* ===== TELEGRAM ===== */
 const tg = window.Telegram?.WebApp;
 
 let user = {
@@ -211,35 +189,11 @@ let user = {
   avatar:""
 };
 
-function initTelegram(){
-  if(tg && tg.initDataUnsafe?.user){
-    const u = tg.initDataUnsafe.user;
-
-    user.id = u.id;
-    user.name = u.first_name || "User";
-    user.avatar = u.photo_url || "";
-  }
-}
-
-/* ===== LOCAL STORAGE ===== */
-function loadUser(){
-  const saved = localStorage.getItem("user");
-  if(saved && (!user.id)){
-    user = JSON.parse(saved);
-  }
-}
-
-function saveUser(){
-  localStorage.setItem("user", JSON.stringify(user));
-}
-
-/* ===== PROFILE UI ===== */
-function renderProfile(){
-  document.getElementById("username").innerText = user.name;
-
-  if(user.avatar){
-    document.getElementById("avatar").src = user.avatar;
-  }
+if(tg && tg.initDataUnsafe?.user){
+  const u = tg.initDataUnsafe.user;
+  user.id = u.id;
+  user.name = u.first_name || "User";
+  user.avatar = u.photo_url || "";
 }
 
 /* ===== MENU ===== */
@@ -260,10 +214,10 @@ function toggleTheme(){
 /* ===== DATABASE ===== */
 const accounts = [
   {id:1,title:"PUBG #001",price:"3$ / час",status:"свободен"},
-  {id:2,title:"PUBG #002",price:"5$ / час",status:"занят"}
+  {id:2,title:"PUBG #002",price:"5$ / час",status:"свободен"}
 ];
 
-/* ===== LOAD CARDS ===== */
+/* ===== LOAD ===== */
 function load(){
   const c=document.getElementById("catalog");
   c.innerHTML="";
@@ -280,7 +234,7 @@ function load(){
   });
 }
 
-/* ===== OPEN ACCOUNT ===== */
+/* ===== OPEN ===== */
 function openAcc(id){
 
   const a = accounts.find(x=>x.id===id);
@@ -288,60 +242,59 @@ function openAcc(id){
   document.getElementById("page").classList.add("open");
 
   document.getElementById("content").innerHTML = `
-    <div class="gallery">
-      <div class="slide"></div>
-      <div class="slide"></div>
-      <div class="slide"></div>
-      <div class="slide"></div>
-      <div class="slide"></div>
-    </div>
-
     <h2>${a.title}</h2>
     <p>💳 ${a.price}</p>
-    <p>📦 ${a.status}</p>
 
-    <button class="menuBtn">1 час</button>
-    <button class="menuBtn">3 часа</button>
-    <button class="menuBtn">6 часа</button>
-
-    <button class="menuBtn" style="margin-top:10px;">Орендувати</button>
+    <button class="menuBtn" onclick="rent(${a.id})">
+      Арендовать
+    </button>
   `;
 }
 
-/* ===== SWIPE CLOSE ===== */
-let startX=0;
-let startY=0;
+/* ===== RENT (MAIN SYSTEM) ===== */
+function rent(id){
 
-const page=document.getElementById("page");
+  const a = accounts.find(x=>x.id===id);
+  a.status = "занят";
 
-page.addEventListener("touchstart",(e)=>{
-  startX=e.touches[0].clientX;
-  startY=e.touches[0].clientY;
-});
+  load();
 
-page.addEventListener("touchend",(e)=>{
+  sendToTelegram(a);
 
-  let endX=e.changedTouches[0].clientX;
-  let endY=e.changedTouches[0].clientY;
+  closePage();
+}
 
-  let dx=endX-startX;
-  let dy=Math.abs(endY-startY);
+/* ===== TELEGRAM SEND ===== */
+function sendToTelegram(a){
 
-  const w=window.innerWidth;
+  const text = `
+📦 Новая аренда
+👤 ${user.name}
+🆔 ${user.id}
+🎮 ${a.title}
+💳 ${a.price}
+`;
 
-  if(startX < w/3 && dx>90 && dy<80){
-    closePage();
+  if(tg && tg.sendData){
+    tg.sendData(JSON.stringify({
+      user:user,
+      account:a
+    }));
   }
-});
 
+  console.log("ORDER:", text);
+}
+
+/* ===== CLOSE PAGE ===== */
 function closePage(){
   document.getElementById("page").classList.remove("open");
 }
 
-/* ===== INIT ===== */
-initTelegram();
-loadUser();
-renderProfile();
+/* ===== PROFILE UI ===== */
+document.getElementById("username").innerText = user.name;
+if(user.avatar) document.getElementById("avatar").src = user.avatar;
+
+/* INIT */
 load();
 
 </script>
