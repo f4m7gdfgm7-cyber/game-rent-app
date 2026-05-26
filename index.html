@@ -1,167 +1,202 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game Rent</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Rent</title>
 
-  <style>
-    body{
-      margin:0;
-      font-family: Arial;
-      transition:0.3s;
-    }
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  transition:0.3s;
+}
 
-    /* верхняя панель */
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:15px;
-      border-bottom:1px solid rgba(128,128,128,0.3);
-    }
+/* TOP BAR */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:15px;
+  border-bottom:1px solid rgba(128,128,128,0.2);
+}
 
-    .btn{
-      padding:10px 14px;
-      border-radius:12px;
-      border:none;
-      cursor:pointer;
-      font-size:16px;
-    }
+.iconBtn{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  font-size:18px;
+}
 
-    /* круглая кнопка назад */
-    .backBtn{
-      width:45px;
-      height:45px;
-      border-radius:50%;
-      border:none;
-      cursor:pointer;
-      font-size:20px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
+/* MENU */
+.menu{
+  position:fixed;
+  top:0;
+  left:-260px;
+  width:240px;
+  height:100%;
+  background:rgba(20,20,20,0.95);
+  color:white;
+  padding:15px;
+  transition:0.3s;
+  z-index:999;
+}
 
-    /* сетка */
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      padding:15px;
-    }
+.menu.open{
+  left:0;
+}
 
-    /* карточка */
-    .card{
-      border-radius:16px;
-      overflow:hidden;
-      cursor:pointer;
-      padding:10px;
-      border:1px solid rgba(128,128,128,0.3);
-    }
+.menu button{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+}
 
-    .img{
-      width:100%;
-      height:90px;
-      border-radius:12px;
-      background:#999;
-      margin-bottom:10px;
-    }
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  padding:15px;
+}
 
-    .accPage{
-      padding:15px;
-    }
-  </style>
+/* CARD */
+.card{
+  border-radius:16px;
+  padding:10px;
+  cursor:pointer;
+}
+
+/* 70% оттенок кнопки */
+.card.light{
+  background:#d9d9d9;
+}
+.card.dark{
+  background:#1e1e1e;
+}
+
+.thumb{
+  width:100%;
+  height:90px;
+  border-radius:12px;
+  background:#999;
+  margin-bottom:10px;
+}
+
+/* PAGE */
+.page{
+  padding:15px;
+}
+
+.slider{
+  width:100%;
+  height:180px;
+  border-radius:12px;
+  background:#888;
+  margin-bottom:15px;
+}
+</style>
 </head>
 
 <body id="body">
 
+<!-- MENU -->
+<div class="menu" id="menu">
+  <button onclick="toggleMenu()">❌ Закрити</button>
+  <button onclick="toggleTheme()">🌙 / ☀️ Тема</button>
+  <button>👤 Профіль</button>
+</div>
+
 <!-- TOP -->
 <div class="topbar">
-  <h2 style="margin:0;">🎮 Rent</h2>
-
-  <button class="btn" onclick="toggleTheme()">🌙 / ☀️</button>
+  <button class="iconBtn" onclick="toggleMenu()">☰</button>
+  <h3 style="margin:0;">Game Rent</h3>
+  <button class="iconBtn" onclick="toggleTheme()">🌙</button>
 </div>
 
 <!-- CATALOG -->
 <div id="catalog" class="grid">
 
-  <div class="card" onclick="openAcc('acc1')">
-    <div class="img"></div>
+  <div class="card dark" onclick="openAcc('acc1')">
+    <div class="thumb"></div>
     <b>#001</b>
     <p>PUBG Mobile</p>
     <p>3$ / час</p>
-    <p>🟢 Free</p>
   </div>
 
-  <div class="card" onclick="openAcc('acc2')">
-    <div class="img"></div>
+  <div class="card dark" onclick="openAcc('acc2')">
+    <div class="thumb"></div>
     <b>#002</b>
     <p>PUBG Mobile</p>
     <p>5$ / час</p>
-    <p>🔴 Busy</p>
   </div>
 
 </div>
 
 <!-- PAGE -->
-<div id="page" class="accPage" style="display:none;">
+<div id="page" class="page" style="display:none;">
 
-  <button id="backBtn" class="backBtn" onclick="back()">←</button>
+  <button class="iconBtn" onclick="back()">←</button>
 
-  <div id="content" style="margin-top:15px;"></div>
+  <div class="slider"></div>
+
+  <div id="content"></div>
 </div>
 
 <script>
-let dark = false;
+let dark = true;
+
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("open");
+}
 
 function toggleTheme(){
   dark = !dark;
 
   if(dark){
-    document.getElementById("body").style.background = "#000";
-    document.getElementById("body").style.color = "#fff";
-    document.getElementById("backBtn").style.background = "#222";
-    document.querySelector(".btn").style.background = "#222";
-    document.querySelector(".btn").style.color = "#fff";
+    document.getElementById("body").style.background="#000";
+    document.getElementById("body").style.color="#fff";
   } else {
-    document.getElementById("body").style.background = "#fff";
-    document.getElementById("body").style.color = "#000";
-    document.getElementById("backBtn").style.background = "#e0e0e0";
-    document.querySelector(".btn").style.background = "#e0e0e0";
-    document.querySelector(".btn").style.color = "#000";
+    document.getElementById("body").style.background="#fff";
+    document.getElementById("body").style.color="#000";
   }
 }
 
 function openAcc(id){
-  document.getElementById("catalog").style.display = "none";
-  document.getElementById("page").style.display = "block";
+  document.getElementById("catalog").style.display="none";
+  document.getElementById("page").style.display="block";
 
-  let html = "";
+  let html="";
 
-  if(id === "acc1"){
-    html = `
+  if(id==="acc1"){
+    html=`
       <h2>#001</h2>
       <p>🎮 PUBG Mobile</p>
       <p>💳 3$ / час</p>
-      <button class="btn">Орендувати</button>
+      <button>Орендувати</button>
     `;
   }
 
-  if(id === "acc2"){
-    html = `
+  if(id==="acc2"){
+    html=`
       <h2>#002</h2>
       <p>🎮 PUBG Mobile</p>
       <p>💳 5$ / час</p>
-      <button class="btn">Орендувати</button>
+      <button>Орендувати</button>
     `;
   }
 
-  document.getElementById("content").innerHTML = html;
+  document.getElementById("content").innerHTML=html;
 }
 
 function back(){
-  document.getElementById("catalog").style.display = "grid";
-  document.getElementById("page").style.display = "none";
+  document.getElementById("catalog").style.display="grid";
+  document.getElementById("page").style.display="none";
 }
 </script>
 
